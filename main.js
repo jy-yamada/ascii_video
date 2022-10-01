@@ -254,7 +254,6 @@ function convert() {
     if (extension == "mp4") type = "video";
     else type = "picture";
     
-    path = "http://127.0.0.1:8887/" + fileName;
     const media = new Media(type, path);
     if (type == "picture") return;
     media.load();
