@@ -1,0 +1,63 @@
+* {
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+    color: white;
+    font-family: 'Courier';
+}
+
+body {
+    min-height: 100vh;
+    height: fit-content;
+    background-color: black;
+}
+
+#main-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+#myCanvas, video {
+    display: none;
+}
+
+#outputDiv {
+    display: block;
+    width: fit-content;
+    margin:0 auto;
+    font-size: 1rem;
+    line-height: .7rem;
+}
+
+footer {
+    margin: 0 auto;
+    width: 360px !important;
+}
+
+#local-input-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+#local-input-label {
+    font-size: .8rem !important;
+}
+
+#file-path-div {
+    border-bottom: solid 1px rgb(100, 100, 100);
+    margin: 0;
+}
+
+#file-path {
+    font-size: .8rem;
+    margin: 0 0 2px 6px;
+}
+
+#convert-btn {
+    margin: 0 auto;
+}
+
+button:hover {
+    cursor: pointer;
+}
