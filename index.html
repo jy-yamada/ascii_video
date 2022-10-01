@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,20 +10,23 @@
 </head>
 <body class="d-flex flex-column justify-content-center align-items-center">
     <canvas id="myCanvas"></canvas>
+    <video id="myVideo"></video>
     <div id="title"></div>
     <div id="main-wrapper">
         <div id="outputDiv"></div>
     </div>
-    <footer class="mb-3 d-flex flex-column align-items-center">
-        <div class="input-group input-group-sm">
-            <div id="local-input-wrapper" class="mb-2 d-flex justify-content-between w-100">
-                <input id="local-input" type="file" accept=".png, .jpg, .jpeg, .mp4" style="display:none;">
-                <label id="local-input-label" class="btn btn-outline-primary col-5" for="local-input">画像/動画ファイル</label>
-                <div id="file-path-div"  class="col-7 d-flex align-items-end flex-nowrap"><p id="file-path"></p></div>
+    <form>
+        <footer class="mb-3 d-flex flex-column align-items-center">
+            <div class="input-group input-group-sm">
+                <div id="local-input-wrapper" class="mb-2 d-flex justify-content-between w-100">
+                    <input id="local-input" name="file" type="file" accept=".png, .jpg, .jpeg, .mp4" style="display:none;">
+                    <label id="local-input-label" class="btn btn-outline-primary col-5" for="local-input">画像ファイル</label>
+                    <div id="file-path-div"  class="col-7 d-flex align-items-end flex-nowrap"><p id="file-path"></p></div>
+                </div>
             </div>
-        </div>
-        <button id="convert-btn" type="button" class="btn btn-primary col-6">WEBカメラを使う</button>
-    </footer>
+            <button id="convert-btn" type="submit" class="btn btn-primary col-6">WEBカメラ</button>
+        </footer>
+    </form>
     <script src="main.js"></script>
 </body>
 </html>

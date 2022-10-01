@@ -2,12 +2,13 @@ config = {
     body: document.querySelector("body"),
     title: document.getElementById("title"),
     myCanvas: document.getElementById("myCanvas"),
+    myVideo: document.getElementById("myVideo"),
     outputDiv: document.getElementById("outputDiv"),
     localInput: document.getElementById("local-input"),
     convertBtn: document.getElementById("convert-btn"),
     footer: document.querySelector("footer"),
     density: "Ñ@#W$9876543210?!abc;:+=-,._ ",
-    extensions: ["jpg", "jpeg", "png", "mp4"],
+    extensions: ["jpg", "jpeg", "png"],
 };
 
 config.myCanvas.width = 320;
@@ -21,14 +22,17 @@ class Picture {
     constructor(path) {
         this.img = new Image();
         config.outputDiv.innerHTML = "<h5>変換中...</h5>";
-        config.convertBtn.disabled = true;
+        this.img.src = path;
         this.img.onload = () => {
             config.outputDiv.innerHTML = "";
-            config.footer.style.display = "flex";
-            config.convertBtn.disabled = false;
             this.load();
+            config.convertBtn.disabled = false;
+            deleteTempFile(path);
+            config.localInput.value = "";
+            config.convertBtn.disabled = false;
+            document.getElementById("file-path").innerHTML = "";
+            config.convertBtn.innerHTML = "WEBカメラ";
         }
-        this.img.src = path;
     }
     
     load() {
@@ -65,78 +69,74 @@ class Picture {
     }
 }
 
-class Video {
-    constructor(path) {
-        this.video = document.createElement("video");
-        this.video.src = path;
-        this.video.muted = true;
-        this.video.id = "video";
-        this.video.width = myCanvas.width;
-        this.video.height = myCanvas.height;
-        this.video.autoplay = true;
-        config.body.prepend(this.video);
-        this.interlace = 0;
-    }
+// class Video {
+//     constructor(path) {
+//         this.video = document.createElement("video");
+//         this.video.src = path;
+//         this.video.muted = true;
+//         this.video.id = "video";
+//         this.video.width = myCanvas.width;
+//         this.video.height = myCanvas.height;
+//         this.video.autoplay = true;
+//         config.body.prepend(this.video);
+//         this.interlace = 0;
+//     }
     
-    load() {
-        this.video.play();
-        const ctx = config.myCanvas.getContext("2d");
-        let interlace = 0;
-        for (let y=0; y < Math.floor(h / block); y ++) {
-            table[y] = new Array(Math.floor(w / block)).fill("b" + y);
-            const rowDiv = document.createElement("div");
-            rowDiv.id = "row" + y;
-            for (let x=0; x < Math.floor(w / block); x ++) {
-                const span = document.createElement("span");
-                span.classList.add("ele");
-                span.innerHTML = "&nbsp;";
-                rowDiv.append(span);
-            }
-            config.outputDiv.append(rowDiv);
-        }
-        canvasUpdate();
+//     load() {
+//         this.video.play();
+//         const ctx = config.myCanvas.getContext("2d");
+//         let interlace = 0;
+//         for (let y=0; y < Math.floor(h / block); y ++) {
+//             table[y] = new Array(Math.floor(w / block)).fill("b" + y);
+//             const rowDiv = document.createElement("div");
+//             rowDiv.id = "row" + y;
+//             for (let x=0; x < Math.floor(w / block); x ++) {
+//                 const span = document.createElement("span");
+//                 span.classList.add("ele");
+//                 span.innerHTML = "&nbsp;";
+//                 rowDiv.append(span);
+//             }
+//             config.outputDiv.append(rowDiv);
+//         }
+//         canvasUpdate();
         
-        function canvasUpdate() {
-            interlace = interlace == 0 ? 1 : 0;
-            ctx.drawImage(document.getElementById("video"), 0, 0, w, h);
-            let y = interlace;
-            for (; y < Math.floor(h / block); y += 2) {
-                for (let x=0; x < Math.floor(w / block); x ++) {
-                    const pixelData = ctx.getImageData(x*block, y*block, block, block);
-                    const r = pixelData.data[0];
-                    const g = pixelData.data[1];
-                    const b = pixelData.data[2];
-                    const grey = r*0.3 + g*0.6 + b*0.1;
-                    const len = config.density.length - 1;
-                    let index = len - Math.floor(grey * len / 255);
-                    if (table[y][x] == config.density[index-1]
-                        ||  table[y][x] == config.density[index]
-                        ||  table[y][x] == config.density[index+1]) {
-                            continue;
-                        }
-                        const asc = config.density[index];
-                        table[y][x] = asc;
-                        const row = document.getElementById("row" + y);
-                        const span = row.querySelectorAll(".ele")[x];
-                        span.innerHTML = asc == " " ? "&nbsp;" : asc;
-                        // span.style.color = `rgb(${r},${g},${b})`;
-                    }
-                }
-            requestAnimationFrame(canvasUpdate);   
-        }
-    }
-    
-    
-}
+//         function canvasUpdate() {
+//             interlace = interlace == 0 ? 1 : 0;
+//             ctx.drawImage(document.getElementById("video"), 0, 0, w, h);
+//             let y = interlace;
+//             for (; y < Math.floor(h / block); y += 2) {
+//                 for (let x=0; x < Math.floor(w / block); x ++) {
+//                     const pixelData = ctx.getImageData(x*block, y*block, block, block);
+//                     const r = pixelData.data[0];
+//                     const g = pixelData.data[1];
+//                     const b = pixelData.data[2];
+//                     const grey = r*0.3 + g*0.6 + b*0.1;
+//                     const len = config.density.length - 1;
+//                     let index = len - Math.floor(grey * len / 255);
+//                     if (table[y][x] == config.density[index-1]
+//                         ||  table[y][x] == config.density[index]
+//                         ||  table[y][x] == config.density[index+1]) {
+//                             continue;
+//                         }
+//                         const asc = config.density[index];
+//                         table[y][x] = asc;
+//                         const row = document.getElementById("row" + y);
+//                         const span = row.querySelectorAll(".ele")[x];
+//                         span.innerHTML = asc == " " ? "&nbsp;" : asc;
+//                         // span.style.color = `rgb(${r},${g},${b})`;
+//                     }
+//                 }
+//             requestAnimationFrame(canvasUpdate);   
+//         }
+//     }
+// }
 
 class Webcam {
     constructor() {
-        this.video = document.createElement("video");
-        this.video.id = "video";
+        this.video = config.myVideo;
         this.video.width = myCanvas.width;
         this.video.height = myCanvas.height;
         this.video.autoplay = true;
-        config.body.prepend(this.video);
         
         navigator.mediaDevices.getUserMedia({
             audio: false,
@@ -167,7 +167,7 @@ class Webcam {
         canvasUpdate();
 
         function canvasUpdate() {
-            ctx.drawImage(document.getElementById("video"), 0, 0, w, h);
+            ctx.drawImage(config.myVideo, 0, 0, w, h);
             interlace = interlace ? false : true;
             let y = interlace ? 0 : 1;
             for (; y < Math.floor(h / block); y += 2) {
@@ -200,7 +200,7 @@ class Webcam {
 class Media {
     constructor (type, path=null) {
         if (type == "picture") this.media = new Picture(path);
-        if (type == "video") this.media = new Video(path);
+        // if (type == "video") this.media = new Video(path);
         if (type == "webcam") this.media = new Webcam();
     }
 
@@ -212,7 +212,10 @@ class Media {
 
 config.localInput.addEventListener("change", getFileName);
 config.localInput.addEventListener("change", changeBtnInnerHTML);
-config.convertBtn.addEventListener("click", convert);
+document.querySelector("form").addEventListener("submit", (e)=>{
+    e.preventDefault();
+    convert();
+});
 
 function getFileName() {
     let value = config.localInput.value.split("\\");
@@ -221,44 +224,101 @@ function getFileName() {
 
 function changeBtnInnerHTML() {
     let value = config.localInput.value.split("\\");
-    if (value == "") config.convertBtn.innerHTML = "WEBカメラを使う";
+    if (value == "") config.convertBtn.innerHTML = "WEBカメラ";
     else config.convertBtn.innerHTML = "変換";
 }
 
-function convert() {
+async function convert() {
     if (!config.title.classList.contains("d-none")) config.title.classList.add("d-none");
+    config.convertBtn.disabled = true;
 
-    let path = config.localInput.value.trim();
-    config.footer.style.display = "none";
-    config.outputDiv.innerHTML = "";
-    config.localInput.value = "";
-    document.getElementById("file-path").innerHTML = "";
-    config.convertBtn.innerHTML = "WEBカメラを使う";
-    myCanvas.width = 320;
-    myCanvas.height = 180;
-    w = myCanvas.width;
-    h = myCanvas.height;
-    if (path == "") {
-        const media = new Media("webcam", path);
+    if (config.localInput.value == "") {
+        const media = new Media("webcam");
+        reset();
         media.load();
-        config.footer.style.display = "flex";
         return;
     }
-    let fileName = path.split("\\");
-    fileName = fileName[fileName.length-1];
-    let extension = fileName.split(".");
-    extension = extension[extension.length-1];
-    if (!config.extensions.includes(extension)) { alert ("未対応の拡張子です"); return; }
     
+    let path_dot_array = config.localInput.value.split(".");
+    if (path_dot_array.length == 1) {
+        alert ("不適切なパスです");
+        reset();
+        return;
+    }
+
+    extension = path_dot_array[path_dot_array.length-1];
+    if (!config.extensions.includes(extension)) { alert ("未対応の拡張子です"); reset(); return; }
+
+    const response = await postTempFile();
+    if (response == null) {
+        alert("something went wrong. Please wait a moment or try another file");
+        reset();
+        return;
+    }
+    
+    
+    let fileName = response;
     let type;
     if (extension == "mp4") type = "video";
     else type = "picture";
-    
-    const media = new Media(type, path);
+
+    const media = new Media(type, fileName);
+
     if (type == "picture") return;
+    reset();
     media.load();
-    config.footer.style.display = "flex";
+    deleteTempFile(fileName);
 }
+
+async function postTempFile() {
+    const formData = new FormData();
+    result = "webcam";
+    
+    if (config.localInput.files[0]) {
+        formData.append("file", config.localInput.files[0]);
+        formData.append("key", "fetch");
+        
+        const param = {
+            method: "POST",
+            body: formData
+        };
+        
+        await fetch("receive.php", param)
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.status) result = data.result;
+            else result = null;
+        });
+    }
+    return result;
+}
+
+async function deleteTempFile(fileName) {
+    const formData = new FormData();
+    formData.append("fileName", fileName);
+    formData.append("key", "fetch");
+    
+    const param = {
+        method: "POST",
+        body: formData
+    };
+    fetch("delete.php", param)
+    return;
+}
+
+function reset() {
+    config.outputDiv.innerHTML = "";
+    config.localInput.value = "";
+    config.convertBtn.disabled = false;
+    document.getElementById("file-path").innerHTML = "";
+    config.convertBtn.innerHTML = "WEBカメラ";
+    config.myCanvas.width = 320;
+    config.myCanvas.height = 180;
+    w = myCanvas.width;
+    h = myCanvas.height;
+}
+
+
 
 // title
 let asciiTitle = [
